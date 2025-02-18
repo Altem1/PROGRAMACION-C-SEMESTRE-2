@@ -9,16 +9,17 @@
       "stopAtEntry": false,
       "externalConsole": true,
       "cwd": "c:/Users/josee/Desktop/C/PROGRAMACION-C-SEMESTRE-2",
-      "program": "c:/Users/josee/Desktop/C/PROGRAMACION-C-SEMESTRE-2/build/Debug/outDebug",
+      "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}.exe",
       "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
+      "miDebuggerPath": "C:/BCC102/bin/gdb.exe",
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",
           "text": "-enable-pretty-printing",
           "ignoreFailures": true
         }
-      ]
+      ],
+      "preLaunchTask": "Build with bcc32c"
     }
   ]
 }
