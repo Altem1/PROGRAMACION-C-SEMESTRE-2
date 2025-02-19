@@ -16,6 +16,7 @@ int main(void){
 
     if(horast>50){
         printf("No esta permitido trabajar mas de 50 horas se te pagara unicamente las 50 horas\n");
+        salario=(40*sueldoh)+(5*(sueldoh*2))+((5)*(sueldoh*3));
     }
 
     if (horast<=40){
@@ -24,8 +25,8 @@ int main(void){
     }else if(horast>40 && horast<=45){
         salario=(40*sueldoh)+((horast-40)*(sueldoh*2));
 
-    }else if (horast>45){
-        salario=(40*sueldoh)+(5*(sueldoh*2))+(5*(sueldoh*3));
+    }else if (horast>45 && horast<=50){
+        salario=(40*sueldoh)+(5*(sueldoh*2))+((horast-45)*(sueldoh*3));
     }
     
     printf("Tu salario de esta semana es de: %d", salario);

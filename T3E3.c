@@ -24,7 +24,16 @@ int main(void){
 
     calgen=cale+calt;
 
-    if(calgen>=6 && prome>=6){
+    if (t1 < 1 || t1 > 10 || 
+        t2 < 1 || t2 > 10 ||
+        t3 < 1 || t3 > 10 ||
+        e1 < 1 || e1 > 10 ||
+        e2 < 1 || e2 > 10 ||
+        e3 < 1 || e3 > 10 ){
+
+        printf("Error: las calificaciones ingresadas son mayores a 10 o menores a 1");
+
+    }else if(calgen>=6 && prome>=6){
         printf("Aprobaste %.2f", calgen);
     }else{
         printf("Reprobaste");
