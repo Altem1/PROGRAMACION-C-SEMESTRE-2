@@ -4,7 +4,7 @@ EXEC_DIR = bin
 TARGET = $(TARGET)
 
 all:
-	$(CC) $(TARGET).c -o $(TARGET)
+	$(CC) $(TARGET).c -o $(TARGET) -lm
 	chmod +x $(TARGET)
 	mkdir -p $(EXEC_DIR)
 	mv $(TARGET) $(EXEC_DIR)/
