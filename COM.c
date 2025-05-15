@@ -1,17 +1,12 @@
 #include <windows.h>
 #include <stdio.h>
 #include <wbemidl.h>
-#include <oleauto.h>
-
-// Definiciones necesarias para MinGW
-#ifndef BSTR
-#define BSTR LPWSTR
-#endif
+#pragma comment(lib, "wbemuuid.lib")
 
 int main() {
     HRESULT hr;
 
-    // 1. Inicializar COM
+    // 1. Inicializar COM (¡esto es esencial!)
     hr = CoInitializeEx(0, COINIT_MULTITHREADED);
     if (FAILED(hr)) {
         printf("Error al inicializar COM: 0x%08X\n", hr);
@@ -39,10 +34,10 @@ int main() {
     // 3. Conectar a WMI
     IWbemLocator *pLoc = NULL;
     hr = CoCreateInstance(
-        &CLSID_WbemLocator,
-        NULL,
+        CLSID_WbemLocator,
+        0,
         CLSCTX_INPROC_SERVER,
-        &IID_IWbemLocator,
+        IID_IWbemLocator,
         (LPVOID*)&pLoc
     );
     if (FAILED(hr)) {
@@ -52,12 +47,11 @@ int main() {
     }
 
     IWbemServices *pSvc = NULL;
-    hr = pLoc->lpVtbl->ConnectServer(
-        pLoc,
-        L"ROOT\\CIMV2",
+    hr = pLoc->ConnectServer(
+        BSTR(L"ROOT\\CIMV2"), // Namespace de WMI
         NULL,
         NULL,
-        NULL,
+        0,
         0,
         0,
         0,
@@ -65,25 +59,24 @@ int main() {
     );
     if (FAILED(hr)) {
         printf("Error al conectar a WMI: 0x%08X\n", hr);
-        pLoc->lpVtbl->Release(pLoc);
+        pLoc->Release();
         CoUninitialize();
         return 1;
     }
 
     // 4. Ejecutar consulta WMI
     IEnumWbemClassObject* pEnumerator = NULL;
-    hr = pSvc->lpVtbl->ExecQuery(
-        pSvc,
-        L"WQL",
-        L"SELECT * FROM Win32_LocalTime",
+    hr = pSvc->ExecQuery(
+        BSTR(L"WQL"),
+        BSTR(L"SELECT * FROM Win32_LocalTime"),
         WBEM_FLAG_FORWARD_ONLY,
         NULL,
         &pEnumerator
     );
     if (FAILED(hr)) {
         printf("Error en consulta WMI: 0x%08X\n", hr);
-        pSvc->lpVtbl->Release(pSvc);
-        pLoc->lpVtbl->Release(pLoc);
+        pSvc->Release();
+        pLoc->Release();
         CoUninitialize();
         return 1;
     }
@@ -91,70 +84,35 @@ int main() {
     // 5. Mostrar resultados en consola
     IWbemClassObject *pclsObj = NULL;
     ULONG uReturn = 0;
-    printf("=== Informacion del sistema (usando COM/WMI) ===\n");
+    printf("=== Información del sistema (usando COM/WMI) ===\n");
 
-    while (1) {
-        hr = pEnumerator->lpVtbl->Next(
-            pEnumerator,
-            WBEM_INFINITE,
-            1,
-            &pclsObj,
-            &uReturn
-        );
-        if (FAILED(hr) || uReturn == 0) break;
+    while (pEnumerator) {
+        hr = pEnumerator->Next(WBEM_INFINITE, 1, &pclsObj, &uReturn);
+        if (uReturn == 0) break;
 
         VARIANT vtProp;
-        VariantInit(&vtProp);
-        
-        hr = pclsObj->lpVtbl->Get(
-            pclsObj,
-            L"Hour",
-            0,
-            &vtProp,
-            NULL,
-            NULL
-        );
-        if (SUCCEEDED(hr)) {
-            printf("Hora actual: %d:", vtProp.intVal);
-            VariantClear(&vtProp);
-        }
+        hr = pclsObj->Get(L"Hour", 0, &vtProp, NULL, NULL);
+        printf("Hora actual: %d:", vtProp.intVal);
+        VariantClear(&vtProp);
 
-        hr = pclsObj->lpVtbl->Get(
-            pclsObj,
-            L"Minute",
-            0,
-            &vtProp,
-            NULL,
-            NULL
-        );
-        if (SUCCEEDED(hr)) {
-            printf("%d:", vtProp.intVal);
-            VariantClear(&vtProp);
-        }
+        hr = pclsObj->Get(L"Minute", 0, &vtProp, NULL, NULL);
+        printf("%d:", vtProp.intVal);
+        VariantClear(&vtProp);
 
-        hr = pclsObj->lpVtbl->Get(
-            pclsObj,
-            L"Second",
-            0,
-            &vtProp,
-            NULL,
-            NULL
-        );
-        if (SUCCEEDED(hr)) {
-            printf("%d\n", vtProp.intVal);
-            VariantClear(&vtProp);
-        }
+        hr = pclsObj->Get(L"Second", 0, &vtProp, NULL, NULL);
+        printf("%d\n", vtProp.intVal);
+        VariantClear(&vtProp);
 
-        pclsObj->lpVtbl->Release(pclsObj);
+        pclsObj->Release();
     }
 
     // 6. Liberar recursos COM
-    pEnumerator->lpVtbl->Release(pEnumerator);
-    pSvc->lpVtbl->Release(pSvc);
-    pLoc->lpVtbl->Release(pLoc);
+    pEnumerator->Release();
+    pSvc->Release();
+    pLoc->Release();
     CoUninitialize();
 
-    printf("\n¡COM se uso correctamente!\n");
-    system("pause");  // <-- Esto mantendrá abierta la consola en Windows
+    printf("\n¡COM se usó correctamente!\n");
+    system("pause");
     return 0;
 }
