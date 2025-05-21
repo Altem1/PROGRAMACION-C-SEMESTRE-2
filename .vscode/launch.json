@@ -2,16 +2,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "C/C++ Runner: Debug Session",
+      "name": "Debug C con GCC y GDB",
       "type": "cppdbg",
       "request": "launch",
       "args": [],
       "stopAtEntry": false,
-      "externalConsole": true,
-      "cwd": "c:/Users/josee/Desktop/C/PROGRAMACION-C-SEMESTRE-2",
-      "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}.exe",
+      "externalConsole": true, // Esto asegura que se abra una consola externa
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
       "MIMode": "gdb",
-      "miDebuggerPath": "C:/BCC102/bin/gdb.exe",
+      "miDebuggerPath": "/usr/bin/gdb", // Ruta estándar de GDB en Ubuntu
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",
@@ -19,7 +19,7 @@
           "ignoreFailures": true
         }
       ],
-      "preLaunchTask": "Build with bcc32c"
+      "preLaunchTask": "build"
     }
   ]
 }

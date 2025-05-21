@@ -4,17 +4,20 @@
 
 void generaValores(int Datos[], int N);
 void imprimir_array(int Datos[], int N);
-void saltos(int Datos[], int N);
+int saltos(int Datos[], int N);
 
 int main(){
 
-    int tam;
+    int tam, sal;
+    srand(time(0));
     printf("Ingrese el tamaño del arreglo: ");
     scanf("%d", &tam);
     int Datos[tam];
 
     generaValores(Datos, tam);
     imprimir_array(Datos, tam);
+    sal=saltos(Datos, tam);
+    printf("%d \n", sal);
 }
 
 void generaValores(int Datos[], int N){
@@ -40,33 +43,41 @@ void imprimir_array(int Datos[], int N){
     printf("\n");
 }
 
-void saltos(int Datos[], int N){
+int saltos(int Datos[], int N) {
+    int posicion = 0, saltos = 0, max=N*2;
 
-    int posicion=0, saltos=0;
-
-    do{
-        
-        if (Datos[posicion] > 0){
-
-            printf("Estamos en [%d] que tiene un %d, saltamos %d posiciones a la derecha \n", posicion, Datos[posicion], Datos[posicion]);    
-
-        }else if(Datos[posicion] < 0){
-
-            printf("Estamos en [%d] que tiene un %d, saltamos %d posiciones a la izquierda \n", posicion, Datos[posicion], Datos[posicion]);    
-
-        }else if( Datos[posicion] == 0 && posicion == 0 ){
-
-            printf("Estamos en posicion %d que tiene un %d, nos atoramos sin llegar a la meta", posicion, Datos[posicion]);
-
-        }else if( Datos[0] < 0  ){
-
-            printf("Estamos en 0 que tiene un %d, si saltamos a la izquierda nos salimos del arreglo");
-            return 1;
-
+    while ( saltos <= max) {
+        if (posicion == N - 1) {
+            //printf("Ya llegamos a la ultima posicion y dimos %d saltos\n", saltos);
+            return saltos;
         }
         
-
-    } while ( posicion != N - 1 );
-    
-
+        if (Datos[posicion] > 0 && (posicion + Datos[posicion] <= N - 1)) {
+            //printf("Estamos en [%d] que tiene un %d, saltamos %d posiciones a la derecha\n", posicion, Datos[posicion], Datos[posicion]);    
+            posicion += Datos[posicion];
+            saltos++;
+        }
+        else if (Datos[posicion] < 0 && (posicion + Datos[posicion] >= 0)) {
+            //printf("Estamos en [%d] que tiene un %d, saltamos %d posiciones a la izquierda\n", posicion, Datos[posicion], Datos[posicion]);    
+            posicion += Datos[posicion];
+            saltos++;
+        }
+        else if (Datos[posicion] == 0) {
+            //printf("Estamos en posicion [%d] que tiene un %d, nos atoramos sin llegar a la meta\n", posicion, Datos[posicion]);
+            saltos=-1;
+            return saltos;
+        }
+        else if (posicion + Datos[posicion] < 0) {
+            //printf("Estamos en [%d] que tiene un %d, si saltamos a la izquierda nos salimos del arreglo\n", posicion, Datos[posicion]);
+            saltos=-1;
+            return saltos;
+        }
+        else if (posicion + Datos[posicion] > N - 1) {
+            //printf("Estamos en [%d] que tiene un %d, si saltamos a la derecha nos salimos del arreglo\n", posicion, Datos[posicion]);
+            saltos=-1;
+            return saltos;
+        }
+    }
+    saltos=-1;
+    return saltos;
 }
